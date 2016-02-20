@@ -22,7 +22,7 @@ public class TestAPI {
     @Path("/metrics")
     @Produces({"application/json"})
     public String getMetrics(){
-        return "metric1";
+        return "metric-edward-tyler";
     }
 
     @GET
