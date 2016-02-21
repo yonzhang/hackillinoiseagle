@@ -13,13 +13,12 @@ import backtype.storm.utils.Utils;
  * Created on 2/17/16.
  * this example demostrate how Correlation topology works
  */
-public class CorrelationExampleTopology {
+public class CorrelationTestTopology {
     public static void main(String[] args) throws Exception{
         TopologyBuilder builder = new TopologyBuilder();
         CorrelationSpout spout = new CorrelationSpout();
         builder.setSpout("testSpout", spout);
-        //BoltDeclarer declarer  = builder.setBolt("testBolt", new MyBolt());
-        BoltDeclarer declarer  = builder.setBolt("testBolt", new TopicBolt());
+        BoltDeclarer declarer  = builder.setBolt("testBolt", new MyBolt());
         declarer.fieldsGrouping("testSpout", new Fields("f1"));
         StormTopology topology = builder.createTopology();
         boolean localMode = true;
