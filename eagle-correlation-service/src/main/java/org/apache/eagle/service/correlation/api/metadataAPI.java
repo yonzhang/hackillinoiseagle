@@ -23,31 +23,33 @@ public class metadataAPI<T> {
     @GET
     @Path("/topics")
     @Produces({"application/json"})
-    public Response findMetrics(){
-    	Response r = new Response();
-    	r.metrics = new ArrayList<T>();
-    	
-    	ArrayList<T> m = mdObj.findAllMetrics();
-    	for(int i = 0; i < m.size(); i++){
-    		r.metrics.add(m.get(i));
-    	}
-    	
-    	return r;
+    public ArrayList<T> findMetrics(){
+    	return mdObj.findAllMetrics();
     }
     
     @GET
     @Path("/groups")
     @Produces({"application/json"})
-    public Response findGroups(){
-    	Response r = new Response();
-    	r.groups = new ArrayList<Group>();
+    public ArrayList<Group> findGroups(){
+    	//String r = new String();
     	
     	ArrayList<Group> g = mdObj.findAllGroups();
-    	for(int i = 0; i < g.size(); i++){
-    		r.groups.add(g.get(i));
+    	return g;
+    	/*for(int i = 0; i < g.size(); i++){
+    			if(i != 0)
+    				r += ',';
+    			
+    			r += (String) g.get(i).getId() + ":[";
+
+    			for(int j = 0; j < g.get(i).metrics.size(); j++){
+    				if(j != 0)
+    					r += ',';
+    				
+    				r += (String) g.get(i).metrics.get(j);
+    			}
+    			r += ']';
     	}
-    	
-    	return r;
+    	return r;*/
     }
     
     @SuppressWarnings({"rawtypes"})
@@ -65,9 +67,14 @@ public class metadataAPI<T> {
     		metricArray.add((T) ary[i]);
     	}
     	
-    	mdObj.addGroup(groupId, metricArray);
+    	if(mdObj.checkGroup(groupId) == true)
+    		return "Group ID already exists";
     	
-    	return "Success";
+    	if(mdObj.addGroup(groupId, metricArray))
+    		return "Success";
+    	else
+    		return "Failure";
+    	
     }
     
     @SuppressWarnings({"rawtypes"})
@@ -76,6 +83,9 @@ public class metadataAPI<T> {
     @Consumes({"application/json"})
     @Produces({"application/json"})
     public String addMetric(String id){ 
+    	if(mdObj.checkMetric(id) == true)
+    		return "Metric ID already exists";
+    	
     	if(mdObj.addMetric(id))
     		return "Success";
     	else

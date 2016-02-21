@@ -18,4 +18,12 @@ public class MetadataMemoryDAOImpl<T> implements MetadataDAO<T> {
 	public boolean addGroup(T id, ArrayList<T> metrics) {
 		return MetadataMemoryManager.getInstance().addGroup(id, metrics);
 	}
+	
+	public boolean checkMetric(T id) {
+		return MetadataMemoryManager.getInstance().checkMetric(id);
+	}
+	
+	public boolean checkGroup(T id) {
+		return MetadataMemoryManager.getInstance().checkGroup(id);
+	}
 }
