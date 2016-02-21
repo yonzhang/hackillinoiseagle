@@ -2,20 +2,28 @@ package org.apache.eagle.service.correlation.api;
 
 import java.util.ArrayList;
 
-public class MetadataMemoryDAOImpl implements MetadataDAO {
+public class MetadataMemoryDAOImpl<T> implements MetadataDAO<T> {
 	public ArrayList<Group> findAllGroups() {
 		return MetadataMemoryManager.getInstance().findAllGroups();
 	}
 
-	public ArrayList<Metric> findAllMetrics() {
+	public ArrayList<T> findAllMetrics() {
 		return MetadataMemoryManager.getInstance().findAllMetrics();
 	}
 
-	public boolean addMetric(int id) {
+	public boolean addMetric(T id) {
 		return MetadataMemoryManager.getInstance().addMetric(id);
 	}
 
-	public boolean addGroup(int id, ArrayList<Metric> metrics) {
+	public boolean addGroup(T id, ArrayList<T> metrics) {
 		return MetadataMemoryManager.getInstance().addGroup(id, metrics);
+	}
+	
+	public boolean checkMetric(T id) {
+		return MetadataMemoryManager.getInstance().checkMetric(id);
+	}
+	
+	public boolean checkGroup(T id) {
+		return MetadataMemoryManager.getInstance().checkGroup(id);
 	}
 }
