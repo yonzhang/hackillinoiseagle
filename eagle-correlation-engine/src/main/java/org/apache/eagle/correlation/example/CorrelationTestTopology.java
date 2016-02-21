@@ -16,7 +16,7 @@ import backtype.storm.utils.Utils;
 public class CorrelationTestTopology {
     public static void main(String[] args) throws Exception{
         TopologyBuilder builder = new TopologyBuilder();
-        CorrelationSpout spout = new CorrelationSpout();
+        CorrelationSpout spout = new CorrelationSpout(1);
         builder.setSpout("testSpout", spout);
         BoltDeclarer declarer  = builder.setBolt("testBolt", new MyBolt());
         declarer.fieldsGrouping("testSpout", new Fields("f1"));

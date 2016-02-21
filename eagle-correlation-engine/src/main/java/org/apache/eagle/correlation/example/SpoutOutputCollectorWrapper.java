@@ -16,7 +16,6 @@ import backtype.storm.spout.SpoutOutputCollector;
  */
 public class SpoutOutputCollectorWrapper extends SpoutOutputCollector {
 	private ISpoutOutputCollector delegate;
-<<<<<<< HEAD
 	private int numBolts;
 
 	public SpoutOutputCollectorWrapper(ISpoutOutputCollector delegate,
@@ -44,28 +43,10 @@ public class SpoutOutputCollectorWrapper extends SpoutOutputCollector {
 		Map<String, List<String>> groups = client.findAllGroups();
 		for (Map.Entry<String, List<String>> e : groups.entrySet()) {
 			if (e.getValue().contains(topic)) {
-				delegate.emit("stream_" + e.getKey().hashCode() % numBolts, tuple,
-						newMessageId);
+				delegate.emit("stream_" + e.getKey().hashCode() % numBolts,
+						tuple, newMessageId);
 			}
 		}
-
-=======
-
-	public SpoutOutputCollectorWrapper(ISpoutOutputCollector delegate) {
-		super(delegate);
-		this.delegate = delegate;
-	}
-
-	@Override
-	public List<Integer> emit(List<Object> tuple, Object messageId) {
-		// decode tuple to have field topic and field f1
-		String topic = (String) tuple.get(0);
-		System.out.println("emitted tuple: " + tuple + ", with message Id: " + messageId + ", with topic " + topic);
-		KafkaMessageIdWrapper newMessageId = new KafkaMessageIdWrapper(messageId);
-		newMessageId.topic = topic;
-
-		delegate.emit("default", tuple, newMessageId);
->>>>>>> origin/master
 		return null;
 	}
 }
