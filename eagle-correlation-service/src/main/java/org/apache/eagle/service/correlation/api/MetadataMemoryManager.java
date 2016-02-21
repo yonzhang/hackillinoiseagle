@@ -29,7 +29,6 @@ public class MetadataMemoryManager<T> {
     public boolean addMetric(T id){
         T m = id;
         if(metrics.add(m)){
-            System.out.println("Size: " + metrics.size());
             return true;
         }
         else
@@ -41,5 +40,18 @@ public class MetadataMemoryManager<T> {
             return true;
         else
             return false;
+    }
+    
+    public boolean checkMetric(T id){
+    	return metrics.contains(id);
+    		
+    }
+    
+    public boolean checkGroup(T id){
+    	for(int i = 0; i < groups.size(); i++){
+    		if(groups.get(i).getId().equals(id))
+    			return true;
+    	}
+    	return false;
     }
 }
