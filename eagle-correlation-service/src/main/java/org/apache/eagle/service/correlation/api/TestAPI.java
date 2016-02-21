@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * Created by yonzhang on 2/18/16.
  */
-@Path("/")
+//@Path("/")
 public class TestAPI {
     @GET
     @Path("/metrics")

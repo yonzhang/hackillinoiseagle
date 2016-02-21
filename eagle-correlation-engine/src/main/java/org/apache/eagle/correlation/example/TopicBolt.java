@@ -35,7 +35,7 @@ public class TopicBolt implements IRichBolt {
 		List<Object> field_values = input.getValues();
 		String topic_name = (String) field_values.get(0);
 		// String message = (String) field_values.get(1);
-		ArrayList<String> message_topic_groups = new ArrayList<String>();
+		// ArrayList<String> message_topic_groups = new ArrayList<String>();
 		// map each topic name with
 		// get the list of groups from metadata
 		Iterator it = metadata.entrySet().iterator();
@@ -45,11 +45,14 @@ public class TopicBolt implements IRichBolt {
 			ArrayList<String> topics = (ArrayList<String>) pair.getValue();
 			// key=grpname and value=list of topics
 			if (topics.contains(topic_name)) {
-				message_topic_groups.add(key); // add current group to list of
-												// groups
+				// message_topic_groups.add(key); // add current group to list
+				// of
+				// groups
+				// create new topic group only if that grp does not exist
+				
 			}
 		}
-		
+
 	}
 
 	@Override
