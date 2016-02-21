@@ -79,7 +79,7 @@ public class CorrelationSpout extends BaseRichSpout {
 		*/
 		
 		//
-		String basePath = "http://localhost:8080/eagle-correlation-service";
+		String basePath = "http://localhost:38080";
 		IMetadataClient client = new MetadataClientImpl(basePath);
 		List<String> topics = client.findAllTopics();
 		//
