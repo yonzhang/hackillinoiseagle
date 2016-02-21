@@ -20,6 +20,7 @@ public class MyBolt implements IRichBolt {
 
     @Override
     public void execute(Tuple input) {
+        System.out.println(input.getFields().get(0));
         collector.ack(input);
         System.out.println("tuple is coming: " + input);
     }
