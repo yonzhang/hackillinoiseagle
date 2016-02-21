@@ -23,7 +23,11 @@ public class SpoutOutputCollectorWrapper extends SpoutOutputCollector {
         System.out.println("emitted tuple: " + tuple + ", with message Id: " + messageId + ", with topic " + topic);
         KafkaMessageIdWrapper newMessageId = new KafkaMessageIdWrapper(messageId);
         newMessageId.topic = topic;
-        delegate.emit("default", tuple, newMessageId);
+        if(topic.equals("topic1")){
+
+            delegate.emit("stream1", tuple, newMessageId);
+            delegate.emit("stream3", tuple, newMessageId);
+        }
         return null;
     }
 }
