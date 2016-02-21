@@ -15,16 +15,106 @@ import backtype.storm.tuple.Tuple;
 /**
  * Created by yonzhang on 2/18/16.
  */
-public class TopicBolt implements IRichBolt {
-	private OutputCollector collector;
-	private HashMap<String, TopicGroup> topic_groups;
+class MetadataLoader implements Runnable {
+
 	private HashMap<String, ArrayList<String>> metadata;
 
+	public MetadataLoader() {
+		metadata = new HashMap<String, ArrayList<String>>();
+	}
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		// connect to meta-data server and pull data
+		try {
+			// while (true) {
+			ArrayList<String> arr1 = new ArrayList<String>();
+			arr1.add("x1");
+			arr1.add("y1");
+			arr1.add("z1");
+			metadata.put("G1", arr1);
+			ArrayList<String> arr2 = new ArrayList<String>();
+			arr2.add("x1");
+			arr2.add("y2");
+			arr2.add("z2");
+			metadata.put("G2", arr2);
+			// Thread.sleep(60 * 1000);
+			// }
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	public HashMap<String, ArrayList<String>> getMetadata() {
+		return metadata;
+	}
+}
+
+class Dispatcher {
+	private HashMap<String, ArrayList<TopicGroup>> topic_groups; // topic to
+																	// list of
+																	// groups
+	private HashMap<String, ArrayList<String>> metadata; // group to list of
+															// topics mapping
+	private HashMap<String, TopicGroup> grp_name_topic_obj;
+
+	Dispatcher(HashMap<String, ArrayList<String>> metadata) {
+		topic_groups = new HashMap<String, ArrayList<TopicGroup>>();
+		this.metadata = metadata;
+		grp_name_topic_obj = new HashMap<String, TopicGroup>();
+	}
+
+	public void dispatch(Tuple input) {
+		Iterator it = metadata.entrySet().iterator();
+		while (it.hasNext()) {
+			Map.Entry pair = (Map.Entry) it.next();
+			String grp_name = (String) pair.getKey();
+			ArrayList<String> topics = (ArrayList<String>) pair.getValue();
+			// key=grpname and value=list of topics
+			TopicGroup t_grp;
+			if (!(grp_name_topic_obj.containsKey(grp_name)))
+				t_grp = new TopicGroup(grp_name, topics);
+			else
+				t_grp = grp_name_topic_obj.get(grp_name);
+
+			for (int i = 0; i < topics.size(); i++) {
+				String topic_name = topics.get(i);
+				ArrayList<TopicGroup> t_groups = new ArrayList<TopicGroup>();
+
+				if (topic_groups.containsKey(topic_name))
+					t_groups = topic_groups.get(topic_name);
+				t_groups.add(t_grp); // add current topic group
+				topic_groups.put(topic_name, t_groups);
+			}
+		}
+	}
+
+	public void printTopicGroups() {
+
+		Iterator it = topic_groups.entrySet().iterator();
+		while (it.hasNext()) {
+			Map.Entry pair = (Map.Entry) it.next();
+			String topic_name = (String) pair.getKey();
+			ArrayList<TopicGroup> grps = (ArrayList<TopicGroup>) pair.getValue();
+			for (int i = 0; i < grps.size(); i++)
+				System.out.println("key=" + topic_name + " value=" + grps.get(i).getName());
+		}
+	}
+}
+
+public class TopicBolt implements IRichBolt {
+	private OutputCollector collector;
+	private MetadataLoader metadata_loader_obj;
 	@Override
 	public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
 		this.collector = collector;
 		// create a new thread to download meta-data from service thread runs
 		// every minute
+		metadata_loader_obj = new MetadataLoader();
+		Thread t = new Thread(metadata_loader_obj);
+		t.start();
 	}
 
 	@Override
@@ -32,26 +122,14 @@ public class TopicBolt implements IRichBolt {
 		collector.ack(input);
 		System.out.println("tuple is coming: " + input);
 		// get the topic and group of the input message
-		List<Object> field_values = input.getValues();
-		String topic_name = (String) field_values.get(0);
-		// String message = (String) field_values.get(1);
-		// ArrayList<String> message_topic_groups = new ArrayList<String>();
-		// map each topic name with
-		// get the list of groups from metadata
-		Iterator it = metadata.entrySet().iterator();
-		while (it.hasNext()) {
-			Map.Entry pair = (Map.Entry) it.next();
-			String key = (String) pair.getKey();
-			ArrayList<String> topics = (ArrayList<String>) pair.getValue();
-			// key=grpname and value=list of topics
-			if (topics.contains(topic_name)) {
-				// message_topic_groups.add(key); // add current group to list
-				// of
-				// groups
-				// create new topic group only if that grp does not exist
-				
-			}
-		}
+		// List<Object> field_values = input.getValues();
+		// String topic_name = (String) field_values.get(0);
+
+		// call dispatcher
+		
+		Dispatcher d = new Dispatcher(metadata_loader_obj.getMetadata());
+		d.dispatch(input);
+		d.printTopicGroups();
 
 	}
 

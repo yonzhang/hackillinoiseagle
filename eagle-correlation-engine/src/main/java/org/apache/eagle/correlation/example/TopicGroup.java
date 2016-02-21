@@ -5,11 +5,14 @@ import java.util.ArrayList;
 public class TopicGroup {
 	private String grp_name;
 	private ArrayList<String> topic_names;
-	private String message;
 
-	public TopicGroup(String grpname, ArrayList<String> topics, String msg) {
+	public TopicGroup(String grpname, ArrayList<String> topics) {
 		grp_name = grpname;
 		topic_names = topics;
-		message = msg;
+
+	}
+
+	public String getName() {
+		return grp_name;
 	}
 }
