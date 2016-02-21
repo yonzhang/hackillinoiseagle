@@ -2,9 +2,9 @@ package org.apache.eagle.service.correlation.api;
 
 import java.util.ArrayList;
 
-public interface MetadataDAO {
-	ArrayList<Metric> findAllMetrics();
+public interface MetadataDAO<T> {
+	ArrayList<T> findAllMetrics();
 	ArrayList<Group> findAllGroups();
-	boolean addMetric(int id);
-	boolean addGroup(int id, ArrayList<Metric> metrics);
+	boolean addMetric(T id);
+	boolean addGroup(T id, ArrayList<T> metrics);
 }
