@@ -35,7 +35,11 @@ public class CorrelationSpout extends BaseRichSpout {
 
 	@Override
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		declarer.declare(new Fields("topic", "f1"));
+		for(int i=0; i<numBolts; i++) {
+			declarer.declareStream("stream_" + i, new Fields("f1"));
+		}
+
+//		declarer.declare(new Fields("topic", "f1"));
 	}
 
 	private KafkaSpoutWrapper createSpout(Map conf, TopologyContext context,
