@@ -29,7 +29,7 @@ public class CorrelationExampleTopology {
 		}
 		StormTopology topology = builder.createTopology();
 		boolean localMode = true;
-		Config conf = new Config();
+		backtype.storm.Config conf = new backtype.storm.Config();
 		if (!localMode) {
 			StormSubmitter.submitTopologyWithProgressBar("testTopology", conf,
 					topology);
