@@ -20,16 +20,19 @@ public class CorrelationExampleTopology {
 		CorrelationSpout spout = new CorrelationSpout(numBolts);
 		builder.setSpout("testSpout", spout);
 		// BoltDeclarer declarer = builder.setBolt("testBolt", new MyBolt());
-		
+
 		for (int i = 0; i < numBolts; i++) {
-			BoltDeclarer declarer = builder.setBolt("testBolt", new TopicBolt());
-			declarer.fieldsGrouping("testSpout", "stream_" + i, new Fields("f1"));
+			BoltDeclarer declarer = builder.setBolt("testBolt_" + i,
+					new TopicBolt());
+			declarer.fieldsGrouping("testSpout", "stream_" + i,
+					new Fields("f1"));
 		}
 		StormTopology topology = builder.createTopology();
 		boolean localMode = true;
 		Config conf = new Config();
 		if (!localMode) {
-			StormSubmitter.submitTopologyWithProgressBar("testTopology", conf, topology);
+			StormSubmitter.submitTopologyWithProgressBar("testTopology", conf,
+					topology);
 		} else {
 			LocalCluster cluster = new LocalCluster();
 			cluster.submitTopology("testTopology", conf, topology);
