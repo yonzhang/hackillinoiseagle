@@ -41,6 +41,7 @@ public class MetadataClientImpl implements IMetadataClient {
     public List findAllGroups() {
         return null;
     }
+    
 
     public static void main(String[] args){
         MetadataClientImpl impl = new MetadataClientImpl("http://localhost:38080");
