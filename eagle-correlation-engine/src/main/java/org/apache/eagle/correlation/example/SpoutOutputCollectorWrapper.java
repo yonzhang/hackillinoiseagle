@@ -3,6 +3,8 @@ package org.apache.eagle.correlation.example;
 import java.util.List;
 import java.util.Map;
 
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 import org.apache.eagle.correlation.client.IMetadataClient;
 import org.apache.eagle.correlation.client.MetadataClientImpl;
 
@@ -38,8 +40,8 @@ public class SpoutOutputCollectorWrapper extends SpoutOutputCollector {
 		 * if(topic.equals("topic1")){ delegate.emit("stream1", tuple,
 		 * newMessageId); delegate.emit("stream3", tuple, newMessageId); }
 		 */
-		String basePath = "http://localhost:38080";
-		IMetadataClient client = new MetadataClientImpl(basePath);
+		Config config = ConfigFactory.load();
+		IMetadataClient client = new MetadataClientImpl(config);
 		Map<String, List<String>> groups = client.findAllGroups();
 		for (Map.Entry<String, List<String>> e : groups.entrySet()) {
 			if (e.getValue().contains(topic)) {

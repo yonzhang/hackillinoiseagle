@@ -3,6 +3,8 @@ package org.apache.eagle.correlation.client;
 import java.util.List;
 import java.util.Map;
 
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 
 import com.sun.jersey.api.client.Client;
@@ -21,8 +23,10 @@ public class MetadataClientImpl implements IMetadataClient {
 
 	Client client;
 
-	public MetadataClientImpl(String basePath) {
-		this.basePath = basePath;
+	public MetadataClientImpl(Config config) {
+		String host = config.getString("eagle.correlation.serviceHost");
+		int port = config.getInt("eagle.correlation.servicePort");
+		this.basePath = "http://" + host + ":" + String.valueOf(port);
 		ClientConfig cc = new DefaultClientConfig();
 		cc.getProperties().put(DefaultClientConfig.PROPERTY_CONNECT_TIMEOUT,
 				60 * 1000);
@@ -50,8 +54,8 @@ public class MetadataClientImpl implements IMetadataClient {
 	}
 
 	public static void main(String[] args) {
-		MetadataClientImpl impl = new MetadataClientImpl(
-				"http://localhost:38080");
+		Config config = ConfigFactory.load();
+		MetadataClientImpl impl = new MetadataClientImpl(config);
 		System.out.println(impl.findAllTopics());
 	}
 }

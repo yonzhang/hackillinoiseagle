@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 import kafka.serializer.StringDecoder;
 
 import org.apache.eagle.correlation.client.IMetadataClient;
@@ -36,10 +38,8 @@ public class CorrelationSpout extends BaseRichSpout {
 	@Override
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
 		for(int i=0; i<numBolts; i++) {
-			declarer.declareStream("stream_" + i, new Fields("f1"));
+			declarer.declareStream("stream_" + i, new Fields("topic","f1"));
 		}
-
-//		declarer.declare(new Fields("topic", "f1"));
 	}
 
 	private KafkaSpoutWrapper createSpout(Map conf, TopologyContext context,
@@ -79,8 +79,8 @@ public class CorrelationSpout extends BaseRichSpout {
 		*/
 		
 		//
-		String basePath = "http://localhost:38080";
-		IMetadataClient client = new MetadataClientImpl(basePath);
+		Config config = ConfigFactory.load();
+		IMetadataClient client = new MetadataClientImpl(config);
 		List<String> topics = client.findAllTopics();
 		//
 		System.out.println(topics);

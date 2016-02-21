@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 import org.apache.eagle.correlation.client.MetadataClientImpl;
 
 import backtype.storm.task.OutputCollector;
@@ -22,9 +24,9 @@ class MetadataLoader implements Runnable {
 	private Map<String, List<String>> metadata;
 	private MetadataClientImpl metadata_obj;
 
-	public MetadataLoader() {
+	public MetadataLoader(Config config) {
 		metadata = new HashMap<String, List<String>>();
-		metadata_obj = new MetadataClientImpl("http://localhost:8080");
+		metadata_obj = new MetadataClientImpl(config);
 	}
 
 	@Override
@@ -42,6 +44,7 @@ class MetadataLoader implements Runnable {
 				 * 1000);
 				 */
 				metadata = metadata_obj.findAllGroups();
+				Thread.sleep(60*1000);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -115,7 +118,8 @@ public class TopicBolt implements IRichBolt {
 		this.collector = collector;
 		// create a new thread to download meta-data from service thread runs
 		// every minute
-		metadata_loader_obj = new MetadataLoader();
+		Config config = ConfigFactory.load(); // should be passed from starter
+		metadata_loader_obj = new MetadataLoader(config);
 		Thread t = new Thread(metadata_loader_obj);
 		t.start();
 	}
