@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.eagle.correlation.client.MetadataClientImpl;
+
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.IRichBolt;
@@ -17,10 +19,12 @@ import backtype.storm.tuple.Tuple;
  */
 class MetadataLoader implements Runnable {
 
-	private HashMap<String, ArrayList<String>> metadata;
+	private Map<String, List<String>> metadata;
+	private MetadataClientImpl metadata_obj;
 
 	public MetadataLoader() {
-		metadata = new HashMap<String, ArrayList<String>>();
+		metadata = new HashMap<String, List<String>>();
+		metadata_obj = new MetadataClientImpl("http://localhost:8080");
 	}
 
 	@Override
@@ -28,40 +32,38 @@ class MetadataLoader implements Runnable {
 		// TODO Auto-generated method stub
 		// connect to meta-data server and pull data
 		try {
-			// while (true) {
-			ArrayList<String> arr1 = new ArrayList<String>();
-			arr1.add("x1");
-			arr1.add("y1");
-			arr1.add("z1");
-			metadata.put("G1", arr1);
-			ArrayList<String> arr2 = new ArrayList<String>();
-			arr2.add("x1");
-			arr2.add("y2");
-			arr2.add("z2");
-			metadata.put("G2", arr2);
-			// Thread.sleep(60 * 1000);
-			// }
+			while (true) {
+				/*
+				 * ArrayList<String> arr1 = new ArrayList<String>();
+				 * arr1.add("x1"); arr1.add("y1"); arr1.add("z1");
+				 * metadata.put("G1", arr1); ArrayList<String> arr2 = new
+				 * ArrayList<String>(); arr2.add("x1"); arr2.add("y2");
+				 * arr2.add("z2"); metadata.put("G2", arr2); Thread.sleep(60 *
+				 * 1000);
+				 */
+				metadata = metadata_obj.findAllGroups();
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 	}
 
-	public HashMap<String, ArrayList<String>> getMetadata() {
+	public Map<String, List<String>> getMetadata() {
 		return metadata;
 	}
 }
 
 class Dispatcher {
-	private HashMap<String, ArrayList<TopicGroup>> topic_groups; // topic to
-																	// list of
-																	// groups
-	private HashMap<String, ArrayList<String>> metadata; // group to list of
-															// topics mapping
+	private Map<String, List<TopicGroup>> topic_groups; // topic to
+														// list of
+														// groups
+	private Map<String, List<String>> metadata; // group to list of
+												// topics mapping
 	private HashMap<String, TopicGroup> grp_name_topic_obj;
 
-	Dispatcher(HashMap<String, ArrayList<String>> metadata) {
-		topic_groups = new HashMap<String, ArrayList<TopicGroup>>();
+	Dispatcher(Map<String, List<String>> metadata) {
+		topic_groups = new HashMap<String, List<TopicGroup>>();
 		this.metadata = metadata;
 		grp_name_topic_obj = new HashMap<String, TopicGroup>();
 	}
@@ -81,7 +83,7 @@ class Dispatcher {
 
 			for (int i = 0; i < topics.size(); i++) {
 				String topic_name = topics.get(i);
-				ArrayList<TopicGroup> t_groups = new ArrayList<TopicGroup>();
+				List<TopicGroup> t_groups = new ArrayList<TopicGroup>();
 
 				if (topic_groups.containsKey(topic_name))
 					t_groups = topic_groups.get(topic_name);
@@ -107,6 +109,7 @@ class Dispatcher {
 public class TopicBolt implements IRichBolt {
 	private OutputCollector collector;
 	private MetadataLoader metadata_loader_obj;
+
 	@Override
 	public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
 		this.collector = collector;
@@ -126,7 +129,7 @@ public class TopicBolt implements IRichBolt {
 		// String topic_name = (String) field_values.get(0);
 
 		// call dispatcher
-		
+
 		Dispatcher d = new Dispatcher(metadata_loader_obj.getMetadata());
 		d.dispatch(input);
 		d.printTopicGroups();
