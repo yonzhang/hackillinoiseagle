@@ -1,9 +1,10 @@
 package org.apache.eagle.service.correlation.api;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class MetadataMemoryDAOImpl<T> implements MetadataDAO<T> {
-	public ArrayList<Group> findAllGroups() {
+	public  HashMap<T, ArrayList<T> > findAllGroups() {
 		return MetadataMemoryManager.getInstance().findAllGroups();
 	}
 

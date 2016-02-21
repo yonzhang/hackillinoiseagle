@@ -6,13 +6,10 @@ import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import javax.ws.rs.*;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
 
 import java.awt.PageAttributes.MediaType;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 
@@ -30,26 +27,9 @@ public class metadataAPI<T> {
     @GET
     @Path("/groups")
     @Produces({"application/json"})
-    public ArrayList<Group> findGroups(){
-    	//String r = new String();
-    	
-    	ArrayList<Group> g = mdObj.findAllGroups();
-    	return g;
-    	/*for(int i = 0; i < g.size(); i++){
-    			if(i != 0)
-    				r += ',';
-    			
-    			r += (String) g.get(i).getId() + ":[";
-
-    			for(int j = 0; j < g.get(i).metrics.size(); j++){
-    				if(j != 0)
-    					r += ',';
-    				
-    				r += (String) g.get(i).metrics.get(j);
-    			}
-    			r += ']';
-    	}
-    	return r;*/
+    public  HashMap<T, ArrayList<T> > findGroups(){
+    	 HashMap<T, ArrayList<T> > g = mdObj.findAllGroups();
+    	 return g;
     }
     
     @SuppressWarnings({"rawtypes"})
@@ -91,17 +71,4 @@ public class metadataAPI<T> {
     	else
     		return "Failure";
     }
-    
-      
-    
-    @XmlRootElement
-    @XmlAccessorType(XmlAccessType.FIELD)
-    @XmlType(propOrder = {})
-    @JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
-    @JsonIgnoreProperties(ignoreUnknown=true)
-    public static class Response <T>{
-		public ArrayList<Group> groups;
-		public ArrayList<T> metrics;
-    }
- 
 }

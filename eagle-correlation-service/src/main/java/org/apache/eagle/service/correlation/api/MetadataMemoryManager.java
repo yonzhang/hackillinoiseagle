@@ -1,6 +1,7 @@
 package org.apache.eagle.service.correlation.api;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by yonzhang on 2/20/16.
@@ -8,7 +9,7 @@ import java.util.ArrayList;
 public class MetadataMemoryManager<T> {
     private static MetadataMemoryManager instance = new MetadataMemoryManager();
     private ArrayList<T> metrics = new ArrayList<T>();
-    private ArrayList<Group> groups = new ArrayList<Group>();
+    private HashMap<T, ArrayList<T> > groups = new HashMap<T, ArrayList<T> >();
 
     private MetadataMemoryManager() {
 
@@ -18,7 +19,7 @@ public class MetadataMemoryManager<T> {
         return instance;
     }
 
-    public ArrayList<Group> findAllGroups() {
+    public  HashMap<T, ArrayList<T> > findAllGroups() {
         return groups;
     }
 
@@ -34,12 +35,9 @@ public class MetadataMemoryManager<T> {
         else
             return false;
     }
-    public boolean addGroup(T id, ArrayList<T> metrics){
-        Group g = new Group(id, metrics);
-        if(groups.add(g))
-            return true;
-        else
-            return false;
+    public boolean addGroup(T id, ArrayList<T> list){
+    	groups.put(id, list);
+    	return true;
     }
     
     public boolean checkMetric(T id){
@@ -48,10 +46,6 @@ public class MetadataMemoryManager<T> {
     }
     
     public boolean checkGroup(T id){
-    	for(int i = 0; i < groups.size(); i++){
-    		if(groups.get(i).getId().equals(id))
-    			return true;
-    	}
-    	return false;
+    	return groups.containsKey(id);
     }
 }
