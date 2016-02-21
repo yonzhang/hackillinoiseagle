@@ -15,7 +15,7 @@ import com.typesafe.config.ConfigFactory;
 public class CorrelationExampleTopology {
 	public static void main(String[] args) throws Exception {
 		Config config = ConfigFactory.load();
-        int numBolts = config.getInt("eagle.correlation.numBolts");
+        int numBolts = 1;//config.getInt("eagle.correlation.numBolts");
 		TopologyBuilder builder = new TopologyBuilder();
 		CorrelationSpout spout = new CorrelationSpout(numBolts);
 		builder.setSpout("testSpout", spout);
