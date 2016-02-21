@@ -86,6 +86,7 @@ public class CorrelationSpout extends BaseRichSpout {
 		System.out.println(topics);
 		//
 		for (String topic : topics) {
+			System.out.println(topic);
 			CreateTopicUtils.ensureTopicReady(topic);
 			KafkaSpoutWrapper wrapper = createSpout(conf, context, collector,
 					topic);
