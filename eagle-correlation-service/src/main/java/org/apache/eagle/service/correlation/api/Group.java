@@ -1,28 +1,28 @@
 package org.apache.eagle.service.correlation.api;
 import java.util.ArrayList;
 
-public class Group {
-	private static int groupID;
-	public static ArrayList<Metric> events = new ArrayList<Metric>();
+public class Group<T> {
+	private T groupID;
+	public ArrayList<T> metrics = new ArrayList<T>();
 	
-	public Group(int ID){
+	public Group(T ID){
 		this.groupID = ID;
 	}
 	
-	public Group(int ID, ArrayList<Metric> events){
+	public Group(T ID, ArrayList<T> metric){
 		this.groupID = ID;
-		this.events = events;
+		this.metrics = metric;
 	}
 	
-	public int getId(){
+	public T getId(){
 		return this.groupID;
 	}
 	
-	public ArrayList<Metric> getEvents(){
-		return this.events;
+	public ArrayList<T> getMetrics(){
+		return this.metrics;
 	}
 	
-	public void addMetric(Metric event){
-		events.add(event);
+	public void addMetric(T  metric){
+		metrics.add(metric);
 	}
 }

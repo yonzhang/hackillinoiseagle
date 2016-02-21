@@ -17,37 +17,39 @@ import java.util.ArrayList;
 
 
 @Path("/")
-public class metadataAPI {
+public class metadataAPI<T> {
 	MetadataMemoryDAOImpl mdObj = new MetadataMemoryDAOImpl();
 	
     @GET
     @Path("/topics")
     @Produces({"application/json"})
-    public Response findMetrics(){
-    	Response r = new Response();
-    	r.metrics = new ArrayList<Metric>();
-    	
-    	ArrayList<Metric> m = mdObj.findAllMetrics();
-    	for(int i = 0; i < m.size(); i++){
-    		r.metrics.add(m.get(i));
-    	}
-    	
-    	return r;
+    public ArrayList<T> findMetrics(){
+    	return mdObj.findAllMetrics();
     }
     
     @GET
     @Path("/groups")
     @Produces({"application/json"})
-    public Response findGroups(){
-    	Response r = new Response();
-    	r.groups = new ArrayList<Group>();
+    public ArrayList<Group> findGroups(){
+    	//String r = new String();
     	
     	ArrayList<Group> g = mdObj.findAllGroups();
-    	for(int i = 0; i < g.size(); i++){
-    		r.groups.add(g.get(i));
+    	return g;
+    	/*for(int i = 0; i < g.size(); i++){
+    			if(i != 0)
+    				r += ',';
+    			
+    			r += (String) g.get(i).getId() + ":[";
+
+    			for(int j = 0; j < g.get(i).metrics.size(); j++){
+    				if(j != 0)
+    					r += ',';
+    				
+    				r += (String) g.get(i).metrics.get(j);
+    			}
+    			r += ']';
     	}
-    	
-    	return r;
+    	return r;*/
     }
     
     @SuppressWarnings({"rawtypes"})
@@ -55,18 +57,24 @@ public class metadataAPI {
     @Path("/addGroup")
     @Consumes({"application/json"})
     @Produces({"application/json"})
-    public String addGroup(String id, String metrics) {
-    	String[] ary = metrics.split(",");
-    	ArrayList<Metric> metricArray = new ArrayList<Metric>();
+    public String addGroup(String data) {
+    	String[] ary = data.split(",");
+    	T groupId = (T) ary[0];
     	
-    	for(int i = 0; i < ary.length; i++){
-    		int mId = Integer.parseInt(ary[i]);	
-    		metricArray.add(new Metric(mId));
+    	ArrayList<T> metricArray = new ArrayList<T>();
+    	
+    	for(int i = 1; i < ary.length; i++){	
+    		metricArray.add((T) ary[i]);
     	}
     	
-    	mdObj.addGroup(Integer.parseInt(id), metricArray);
+    	if(mdObj.checkGroup(groupId) == true)
+    		return "Group ID already exists";
     	
-    	return "Success";
+    	if(mdObj.addGroup(groupId, metricArray))
+    		return "Success";
+    	else
+    		return "Failure";
+    	
     }
     
     @SuppressWarnings({"rawtypes"})
@@ -75,7 +83,10 @@ public class metadataAPI {
     @Consumes({"application/json"})
     @Produces({"application/json"})
     public String addMetric(String id){ 
-    	if(mdObj.addMetric(Integer.parseInt(id)) == true)
+    	if(mdObj.checkMetric(id) == true)
+    		return "Metric ID already exists";
+    	
+    	if(mdObj.addMetric(id))
     		return "Success";
     	else
     		return "Failure";
@@ -88,9 +99,9 @@ public class metadataAPI {
     @XmlType(propOrder = {})
     @JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
     @JsonIgnoreProperties(ignoreUnknown=true)
-    public static class Response{
+    public static class Response <T>{
 		public ArrayList<Group> groups;
-		public ArrayList<Metric> metrics;
+		public ArrayList<T> metrics;
     }
  
 }
